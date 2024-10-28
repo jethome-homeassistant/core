@@ -1,13 +1,13 @@
-image: ghcr.io/jethub-homeassistant/{machine}-homeassistant
+image: ghcr.io/jethome-homeassistant/{machine}-homeassistant
 build_from:
-  aarch64: "ghcr.io/jethub-homeassistant/aarch64-homeassistant:"
-  armv7: "ghcr.io/jethub-homeassistant/armv7-homeassistant:"
-  armhf: "ghcr.io/jethub-homeassistant/armhf-homeassistant:"
-  amd64: "ghcr.io/jethub-homeassistant/amd64-homeassistant:"
-  i386: "ghcr.io/jethub-homeassistant/i386-homeassistant:"
+  aarch64: "ghcr.io/jethome-homeassistant/aarch64-homeassistant:"
+  armv7: "ghcr.io/jethome-homeassistant/armv7-homeassistant:"
+  armhf: "ghcr.io/jethome-homeassistant/armhf-homeassistant:"
+  amd64: "ghcr.io/jethome-homeassistant/amd64-homeassistant:"
+  i386: "ghcr.io/jethome-homeassistant/i386-homeassistant:"
 cosign:
-  base_identity: https://github.com/jethub-homeassistant/core/.*
-  identity: https://github.com/jethub-homeassistant/core/.*
+  base_identity: https://github.com/jethome-homeassistant/core/.*
+  identity: https://github.com/jethome-homeassistant/core/.*
 labels:
   io.hass.type: core
-  org.opencontainers.image.source: https://github.com/jethub-homeassistant/core
+  org.opencontainers.image.source: https://github.com/jethome-homeassistant/core

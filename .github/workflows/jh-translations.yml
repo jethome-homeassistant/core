@@ -13,19 +13,19 @@ on:
       - "**strings.json"
 
 env:
-  DEFAULT_PYTHON: "3.12"
+  DEFAULT_PYTHON: "3.13"
 
 jobs:
   upload:
     name: Upload
-    if: github.repository_owner == 'jethub-homeassistant'
+    if: github.repository_owner == 'jethome-homeassistant'
     runs-on: ${{ vars.RUNNER }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4.2.0
+        uses: actions/checkout@v5.0.0
 
       - name: Set up Python ${{ env.DEFAULT_PYTHON }}
-        uses: actions/setup-python@v5.2.0
+        uses: actions/setup-python@v6.0.0
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
 
