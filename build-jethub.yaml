@@ -1,10 +1,10 @@
 image: ghcr.io/jethome-homeassistant/{arch}-homeassistant
 build_from:
-  aarch64: ghcr.io/jethome-homeassistant/aarch64-homeassistant-base:2025.10.1
-  armhf: ghcr.io/jethome-homeassistant/armhf-homeassistant-base:2025.10.1
-  armv7: ghcr.io/jethome-homeassistant/armv7-homeassistant-base:2025.10.1
-  amd64: ghcr.io/jethome-homeassistant/amd64-homeassistant-base:2025.10.1
-  i386: ghcr.io/jethome-homeassistant/i386-homeassistant-base:2025.10.1
+  aarch64: ghcr.io/jethome-homeassistant/aarch64-homeassistant-base:2025.09.3
+  armhf: ghcr.io/jethome-homeassistant/armhf-homeassistant-base:2025.09.3
+  armv7: ghcr.io/jethome-homeassistant/armv7-homeassistant-base:2025.09.3
+  amd64: ghcr.io/jethome-homeassistant/amd64-homeassistant-base:2025.09.3
+  i386: ghcr.io/jethome-homeassistant/i386-homeassistant-base:2025.09.3
 cosign:
   base_identity: https://github.com/jethome-homeassistant/docker/.*
   identity: https://github.com/jethome-homeassistant/core/.*
