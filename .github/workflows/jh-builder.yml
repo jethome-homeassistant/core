@@ -19,7 +19,7 @@ jobs:
   init:
     name: Initialize build
     if: github.repository_owner == 'jethome-homeassistant'
-    runs-on: ${{ vars.RUNNER }}
+    runs-on: ubuntu-latest
     outputs:
       architectures: ${{ steps.info.outputs.architectures }}
       version: ${{ steps.version.outputs.version }}
@@ -85,7 +85,7 @@ jobs:
     name: Build ${{ matrix.arch }} base core image
     if: github.repository_owner == 'jethome-homeassistant'
     needs: init
-    runs-on: ${{ vars.RUNNER }}
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
@@ -226,7 +226,7 @@ jobs:
     name: Build ${{ matrix.machine }} machine core image
     if: github.repository_owner == 'jethome-homeassistant'
     needs: ["init", "build_base"]
-    runs-on: ${{ vars.RUNNER }}
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
@@ -297,7 +297,7 @@ jobs:
     name: Publish version files
     if: github.repository_owner == 'jethome-homeassistant'
     needs: ["init", "build_machine"]
-    runs-on: ${{ vars.RUNNER }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -333,7 +333,7 @@ jobs:
     name: Publish meta container for ${{ matrix.registry }}
     if: github.repository_owner == 'jethome-homeassistant'
     needs: ["init", "build_base"]
-    runs-on: ${{ vars.RUNNER }}
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
@@ -474,7 +474,7 @@ jobs:
     name: Build PyPi package
     environment: ${{ needs.init.outputs.channel }}
     needs: ["init", "build_base"]
-    runs-on: ${{ vars.RUNNER }}
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
