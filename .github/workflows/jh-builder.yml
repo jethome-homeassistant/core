@@ -15,7 +15,7 @@ env:
   UV_HTTP_TIMEOUT: 60
   UV_SYSTEM_PYTHON: "true"
 # Base image version from https://github.com/home-assistant/docker
-  BASE_IMAGE_VERSION: "2025.12.0"
+  BASE_IMAGE_VERSION: "2025.11.3"
   ARCHITECTURES: '["amd64", "aarch64"]'
 
 jobs:
@@ -195,8 +195,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - &install_cosign
-        name: Install Cosign
+      - name: Install Cosign
         uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
         with:
           cosign-release: "v2.5.3"
@@ -305,7 +304,7 @@ jobs:
 
       # home-assistant/builder doesn't support sha pinning
       - name: Build base image
-        uses: jethome-homeassistant/builder@2025.11.0
+        uses: jethome-homeassistant/builder@2025.09.0
         with:
           args: |
             $BUILD_ARGS \
@@ -364,7 +363,10 @@ jobs:
       matrix:
         registry: ["ghcr.io/jethome-homeassistant", "cr.jethome.work/ha"]
     steps:
-      - *install_cosign
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
+        with:
+          cosign-release: "v2.2.3"
 
       - name: Login to DockerHub
         if: matrix.registry == 'cr.jethome.work/ha'
