@@ -139,7 +139,7 @@ jobs:
           sed -i "/uv/d" requirements_diff.txt
 
       - name: Build wheels
-        uses: jethome-homeassistant/wheels@2026.07.0
+        uses: jethome-homeassistant/wheels@2025.12.0
         with:
           abi: ${{ matrix.abi }}
           tag: musllinux_1_2
@@ -197,7 +197,7 @@ jobs:
           sed -i "/uv/d" requirements_diff.txt
 
       - name: Build wheels
-        uses: jethome-homeassistant/wheels@2026.07.0
+        uses: jethome-homeassistant/wheels@2025.12.0
         with:
           abi: ${{ matrix.abi }}
           tag: musllinux_1_2
