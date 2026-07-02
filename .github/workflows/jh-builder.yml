@@ -14,7 +14,7 @@ env:
   UV_HTTP_TIMEOUT: 60
   UV_SYSTEM_PYTHON: "true"
 # Base image version from https://github.com/home-assistant/docker
-  BASE_IMAGE_VERSION: "2026.07.0"
+  BASE_IMAGE_VERSION: "2026.05.0"
   ARCHITECTURES: '["amd64", "aarch64"]'
 
 permissions: {}
@@ -456,9 +456,18 @@ jobs:
             TAG_ARGS+=("--tag" "${tag}")
           done
 
-          # Create manifest with ALL tags in a single operation (much faster!)
           echo "Creating multi-arch manifest with tags: ${TAGS[*]}"
-          docker buildx imagetools create "${TAG_ARGS[@]}" "${ARCH_IMAGES[@]}"
+          for attempt in 1 2 3; do
+            if docker buildx imagetools create "${TAG_ARGS[@]}" "${ARCH_IMAGES[@]}"; then
+              break
+            fi
+            echo "Attempt ${attempt} failed, retrying in 10 seconds..."
+            sleep 10
+            if [ "${attempt}" -eq 3 ]; then
+              echo "Failed after 3 attempts"
+              exit 1
+            fi
+          done
 
           # Sign each tag separately (signing requires individual tag names)
           echo "Signing all tags..."
