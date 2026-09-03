@@ -16,11 +16,6 @@ env:
 # Base image version from https://github.com/home-assistant/docker
   BASE_IMAGE_VERSION: "2026.07.0"
   ARCHITECTURES: '["amd64", "aarch64"]'
-  MACHINES: >-
-    ["generic-x86-64", "khadas-vim3", "odroid-c2", "odroid-c4", "odroid-m1",
-    "odroid-n2", "qemuarm-64", "qemux86-64", "raspberrypi3-64",
-    "raspberrypi4-64", "raspberrypi5-64", "yellow", "green",
-    "jethub-d1", "jethub-d1p", "jethub-d2", "jethub-h1", "jethub-h2"]
 
 permissions: {}
 
@@ -40,7 +35,6 @@ jobs:
       channel: ${{ steps.version.outputs.channel }}
       publish: ${{ steps.version.outputs.publish }}
       architectures: ${{ env.ARCHITECTURES }}
-      machines: ${{ env.MACHINES }}
       base_image_version: ${{ env.BASE_IMAGE_VERSION }}
     steps:
       - name: Checkout the repository
@@ -229,7 +223,20 @@ jobs:
       id-token: write
     strategy:
       matrix:
-        machine: ${{ fromJson(needs.init.outputs.machines) }}
+        machine:
+          - generic-x86-64
+          - khadas-vim3
+          - odroid-c2
+          - odroid-c4
+          - odroid-m1
+          - odroid-n2
+          - qemuarm-64
+          - qemux86-64
+          - raspberrypi3-64
+          - raspberrypi4-64
+          - raspberrypi5-64
+          - yellow
+          - green
         include:
           # Default: aarch64 on native ARM runner
           - arch: aarch64
@@ -279,6 +286,7 @@ jobs:
             ${{ steps.tags.outputs.extra_tags }}
           push: true
           version: ${{ needs.init.outputs.version }}
+
   publish_ha:
     name: Publish version files
     environment: ${{ needs.init.outputs.channel }}
