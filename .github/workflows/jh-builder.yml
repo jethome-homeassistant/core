@@ -224,6 +224,11 @@ jobs:
     strategy:
       matrix:
         machine:
+          - jethub-h1
+          - jethub-h2
+          - jethub-d1
+          - jethub-d1p
+          - jethub-d2
           - generic-x86-64
           - khadas-vim3
           - odroid-c2
