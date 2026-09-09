@@ -20,7 +20,8 @@ env:
     ["generic-x86-64", "khadas-vim3", "odroid-c2", "odroid-c4", "odroid-m1",
     "odroid-n2", "qemuarm-64", "qemux86-64", "raspberrypi3-64",
     "raspberrypi4-64", "raspberrypi5-64", "yellow", "green",
-    "jethub-d1", "jethub-d1p", "jethub-d2", "jethub-h1", "jethub-h2"]
+    "jethub-d1", "jethub-d1p", "jethub-d2", "jethub-d3-mini", "jethub-h1",
+    "jethub-h2"]
 
 permissions: {}
 
