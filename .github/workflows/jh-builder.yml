@@ -3,12 +3,19 @@ name: JH Build images
 # yamllint disable-line rule:truthy
 on:
   workflow_dispatch:
+    inputs:
+      weblate:
+        description: "Download translations from Weblate instead of the upstream image"
+        type: boolean
+        default: false
   release:
     types: ["published"]
   schedule:
     - cron: "0 2 * * *"
 
 env:
+  # Translations source switch: true = Weblate, otherwise upstream docker image
+  weblate: ${{ inputs.weblate == true }}
   BUILD_TYPE: core
   PIP_TIMEOUT: 60
   UV_HTTP_TIMEOUT: 60
@@ -77,25 +84,36 @@ jobs:
               exit 1
           fi
 
-      - name: Download translations from Weblate
+      - name: Download translations
         env:
           WEBLATE_URL: ${{ secrets.WEBLATE_URL }}
           WEBLATE_TOKEN: ${{ secrets.WEBLATE_TOKEN }}
         run: |
           set -e
+          if [ "${{ env.weblate }}" != "true" ]; then
+            VERSION=$(curl -s https://version.home-assistant.io/beta.json | jq -r '.homeassistant."qemuarm-64"')
+            docker create --platform linux/arm64 --name temp-core "ghcr.io/home-assistant/aarch64-homeassistant:$VERSION"
+            docker cp temp-core:"/usr/src/homeassistant/homeassistant" ./
+            docker rm temp-core
+            exit 0
+          fi
+          echo "Downloading translations from Weblate"
           mkdir -p build/translations-download
-          langs=$(curl -sS -H "Authorization: Token $WEBLATE_TOKEN" \
+          langs=$(curl -fsSL -H "Authorization: Token $WEBLATE_TOKEN" \
             "$WEBLATE_URL/api/components/homeassistant/core/translations/?page_size=100" \
-            | jq -r '.results[].language.code')
+            | jq -r 'if .results then .results[].language.code else error("unexpected response") end') \
+            || { echo "Weblate: failed to list translations, check WEBLATE_URL/WEBLATE_TOKEN and the component"; exit 1; }
           if [ -z "$langs" ]; then
             echo "No translations found in Weblate, run JH Translations workflow first"
             exit 1
           fi
           for lang in $langs; do
-            echo "Downloading $lang"
-            curl -sS -H "Authorization: Token $WEBLATE_TOKEN" \
+            ha_lang=${lang//_/-}
+            echo "Downloading $ha_lang"
+            curl -fsSL -H "Authorization: Token $WEBLATE_TOKEN" \
               "$WEBLATE_URL/api/translations/homeassistant/core/$lang/file/" \
-              -o "build/translations-download/$lang.json"
+              -o "build/translations-download/$ha_lang.json" \
+              || { echo "Weblate: failed to download $lang"; exit 1; }
           done
           python3 -m script.jhtranslations download
 
