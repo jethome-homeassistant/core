@@ -3,11 +3,6 @@ name: JH Build images
 # yamllint disable-line rule:truthy
 on:
   workflow_dispatch:
-    inputs:
-      weblate:
-        description: "Download translations from Weblate instead of the upstream image"
-        type: boolean
-        default: false
   release:
     types: ["published"]
   schedule:
@@ -15,7 +10,7 @@ on:
 
 env:
   # Translations source switch: true = Weblate, otherwise upstream docker image
-  weblate: ${{ inputs.weblate == true }}
+  weblate: "false"
   BUILD_TYPE: core
   PIP_TIMEOUT: 60
   UV_HTTP_TIMEOUT: 60
