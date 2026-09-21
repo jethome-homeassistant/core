@@ -63,7 +63,7 @@ jobs:
       - name: Extract translations from upstream dev image
         run: |
           VERSION=$(curl -s https://version.home-assistant.io/dev.json | jq -r '.homeassistant."qemuarm-64"')
-          docker create --name temp-core "ghcr.io/home-assistant/aarch64-homeassistant:$VERSION"
+          docker create --platform linux/arm64 --name temp-core "ghcr.io/home-assistant/aarch64-homeassistant:$VERSION"
           docker cp temp-core:"/usr/src/homeassistant/homeassistant/components" build/upstream-components
           docker rm temp-core
 
