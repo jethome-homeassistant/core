@@ -32,7 +32,6 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
 
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -64,7 +63,7 @@ jobs:
       - name: Extract translations from upstream dev image
         run: |
           VERSION=$(curl -s https://version.home-assistant.io/dev.json | jq -r '.homeassistant."qemuarm-64"')
-          docker create --name temp-core ghcr.io/home-assistant/aarch64-homeassistant:$VERSION
+          docker create --name temp-core "ghcr.io/home-assistant/aarch64-homeassistant:$VERSION"
           docker cp temp-core:"/usr/src/homeassistant/homeassistant/components" build/upstream-components
           docker rm temp-core
 
@@ -81,13 +80,14 @@ jobs:
           set -e
           for f in build/translations-download/*.json; do
             lang=$(basename "$f" .json)
+            weblate_lang=${lang//-/_}
             echo "::group::$lang"
             for attempt in 1 2 3 4 5; do
               code=$(curl -sS -o /tmp/weblate-response.json -w '%{http_code}' \
                 -X POST \
                 -H "Authorization: Token $WEBLATE_TOKEN" \
                 -H "Content-Type: application/json" \
-                -d "{\"language_code\": \"$lang\"}" \
+                -d "{\"language_code\": \"$weblate_lang\"}" \
                 "$WEBLATE_URL/api/components/$WEBLATE_PROJECT/$WEBLATE_COMPONENT/translations/")
               if [ "$code" = "201" ] || [ "$code" = "409" ]; then
                 break
@@ -106,7 +106,7 @@ jobs:
                 -H "Authorization: Token $WEBLATE_TOKEN" \
                 -F "file=@$f" \
                 -F "overwrite=1" \
-                "$WEBLATE_URL/api/translations/$WEBLATE_PROJECT/$WEBLATE_COMPONENT/$lang/file/")
+                "$WEBLATE_URL/api/translations/$WEBLATE_PROJECT/$WEBLATE_COMPONENT/$weblate_lang/file/")
               if [ "$code" = "200" ]; then
                 break
               fi
