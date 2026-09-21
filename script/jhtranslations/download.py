@@ -78,11 +78,24 @@ def save_language_translations(lang, translations):
             save_json(path, platform_translations)
 
 
+def prune_empty_translations(translations):
+    """Drop untranslated strings and empty containers."""
+    result = {}
+    for key, value in translations.items():
+        if isinstance(value, dict):
+            sub_dict = prune_empty_translations(value)
+            if sub_dict:
+                result[key] = sub_dict
+        elif value != "":
+            result[key] = value
+    return result
+
+
 def write_integration_translations():
     """Write integration translations."""
     for lang_file in DOWNLOAD_DIR.glob("*.json"):
         lang = lang_file.stem
-        translations = json.loads(lang_file.read_text())
+        translations = prune_empty_translations(json.loads(lang_file.read_text()))
         save_language_translations(lang, translations)
 
 

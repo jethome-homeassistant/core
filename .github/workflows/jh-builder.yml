@@ -77,12 +77,27 @@ jobs:
               exit 1
           fi
 
-      - name: Download Translations from upstream
+      - name: Download translations from Weblate
+        env:
+          WEBLATE_URL: ${{ secrets.WEBLATE_URL }}
+          WEBLATE_TOKEN: ${{ secrets.WEBLATE_TOKEN }}
         run: |
-          VERSION=$(curl -s https://version.home-assistant.io/beta.json | jq -r '.homeassistant."qemuarm-64"')
-          docker create --platform linux/arm64 --name temp-core ghcr.io/home-assistant/aarch64-homeassistant:$VERSION
-          docker cp temp-core:"/usr/src/homeassistant/homeassistant" ./
-          docker rm temp-core
+          set -e
+          mkdir -p build/translations-download
+          langs=$(curl -sS -H "Authorization: Token $WEBLATE_TOKEN" \
+            "$WEBLATE_URL/api/components/homeassistant/core/translations/?page_size=100" \
+            | jq -r '.results[].language.code')
+          if [ -z "$langs" ]; then
+            echo "No translations found in Weblate, run JH Translations workflow first"
+            exit 1
+          fi
+          for lang in $langs; do
+            echo "Downloading $lang"
+            curl -sS -H "Authorization: Token $WEBLATE_TOKEN" \
+              "$WEBLATE_URL/api/translations/homeassistant/core/$lang/file/" \
+              -o "build/translations-download/$lang.json"
+          done
+          python3 -m script.jhtranslations download
 
       - name: Archive translations
         shell: bash
