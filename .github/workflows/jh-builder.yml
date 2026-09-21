@@ -93,21 +93,21 @@ jobs:
           fi
           echo "Downloading translations from Weblate"
           mkdir -p build/translations-download
-          langs=$(curl -fsSL -H "Authorization: Token $WEBLATE_TOKEN" \
+          curl -fsSL -H "Authorization: Token $WEBLATE_TOKEN" \
             "$WEBLATE_URL/api/components/homeassistant/core/translations/?page_size=100" \
-            | jq -r 'if .results then .results[].language.code else error("unexpected response") end') \
+            -o /tmp/weblate-translations.json \
             || { echo "Weblate: failed to list translations, check WEBLATE_URL/WEBLATE_TOKEN and the component"; exit 1; }
-          if [ -z "$langs" ]; then
+          translations=$(jq -r 'if .results then .results[] | "\(.language.code) \(.filename)" else error("unexpected response") end' /tmp/weblate-translations.json)
+          if [ -z "$translations" ]; then
             echo "No translations found in Weblate, run JH Translations workflow first"
             exit 1
           fi
-          for lang in $langs; do
-            ha_lang=${lang//_/-}
-            echo "Downloading $ha_lang"
+          printf '%s\n' "$translations" | while read -r code filename; do
+            echo "Downloading $filename"
             curl -fsSL -H "Authorization: Token $WEBLATE_TOKEN" \
-              "$WEBLATE_URL/api/translations/homeassistant/core/$lang/file/" \
-              -o "build/translations-download/$ha_lang.json" \
-              || { echo "Weblate: failed to download $lang"; exit 1; }
+              "$WEBLATE_URL/api/translations/homeassistant/core/$code/file/" \
+              -o "build/translations-download/$filename" \
+              || { echo "Weblate: failed to download $code"; exit 1; }
           done
           python3 -m script.jhtranslations download
 
