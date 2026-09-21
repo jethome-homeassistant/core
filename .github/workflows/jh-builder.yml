@@ -9,8 +9,6 @@ on:
     - cron: "0 2 * * *"
 
 env:
-  # Translations source switch: true = Weblate, otherwise upstream docker image
-  weblate: "false"
   BUILD_TYPE: core
   PIP_TIMEOUT: 60
   UV_HTTP_TIMEOUT: 60
@@ -85,7 +83,8 @@ jobs:
           WEBLATE_TOKEN: ${{ secrets.WEBLATE_TOKEN }}
         run: |
           set -e
-          if [ "${{ env.weblate }}" != "true" ]; then
+          # Translations source switch: repository variable "weblate" = true -> Weblate, otherwise upstream docker image
+          if [ "${{ vars.weblate }}" != "true" ]; then
             VERSION=$(curl -s https://version.home-assistant.io/beta.json | jq -r '.homeassistant."qemuarm-64"')
             docker create --platform linux/arm64 --name temp-core "ghcr.io/home-assistant/aarch64-homeassistant:$VERSION"
             docker cp temp-core:"/usr/src/homeassistant/homeassistant" ./
