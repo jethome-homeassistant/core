@@ -90,7 +90,15 @@ jobs:
             || { echo "Weblate: failed to get the component"; exit 1; }
           source_lang=$(jq -r '.source_language.code' /tmp/weblate-component.json)
 
+          # Upload the source language first, so new source strings are visible to the rest
+          files=(build/translations-download/en.json)
           for f in build/translations-download/*.json; do
+            if [ "$f" != "build/translations-download/en.json" ]; then
+              files+=("$f")
+            fi
+          done
+
+          for f in "${files[@]}"; do
             lang=$(basename "$f" .json)
             echo "::group::$lang"
             code=$(printf '%s\n' "$existing" | awk -v file="$lang.json" '$1 == file {print $2}')
