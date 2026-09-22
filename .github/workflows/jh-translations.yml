@@ -124,10 +124,10 @@ jobs:
                 sleep 30
               done
             fi
-            # The source language translation is read-only, only method=source can update it
             upload_args=(-F "overwrite=1")
             if [ "$code" = "$source_lang" ]; then
-              upload_args+=(-F "method=source")
+              # Monolingual source translation can only be fully replaced
+              upload_args=(-F "method=replace")
             fi
             for attempt in 1 2 3 4 5; do
               http=$(curl -sS -o /tmp/weblate-response.json -w '%{http_code}' \
