@@ -147,5 +147,26 @@ jobs:
               echo "Component locked, retry in 30s (attempt $attempt)"
               sleep 30
             done
+            if [ "$code" = "$source_lang" ]; then
+              # Re-scan component files after the template replacement
+              for attempt in 1 2 3 4 5; do
+                http=$(curl -sS -o /tmp/weblate-response.json -w '%{http_code}' \
+                  -X POST \
+                  -H "Authorization: Token $WEBLATE_TOKEN" \
+                  -H "Content-Type: application/json" \
+                  -d '{"operation": "file-scan"}' \
+                  "$WEBLATE_URL/api/components/$WEBLATE_PROJECT/$WEBLATE_COMPONENT/repository/")
+                if [ "$http" = "200" ]; then
+                  break
+                fi
+                if [ "$http" != "423" ] && [ "$http" != "429" ]; then
+                  echo "Repository file-scan failed (HTTP $http)"
+                  cat /tmp/weblate-response.json
+                  exit 1
+                fi
+                echo "Component locked, retry in 30s (attempt $attempt)"
+                sleep 30
+              done
+            fi
             echo "::endgroup::"
           done
