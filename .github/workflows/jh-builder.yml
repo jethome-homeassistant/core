@@ -232,7 +232,7 @@ jobs:
           echo "${GITHUB_SHA};${GITHUB_REF};${GITHUB_EVENT_NAME};${GITHUB_ACTOR}" > rootfs/OFFICIAL_IMAGE
 
       - name: Build base image
-        uses: jethome-homeassistant/builder/actions/build-image@2026.09.0
+        uses: jethome-homeassistant/builder/actions/build-image@2026.06.0
         with:
           arch: ${{ matrix.arch }}
           build-args: |
@@ -290,7 +290,7 @@ jobs:
           fi
 
       - name: Build machine image
-        uses: jethome-homeassistant/builder/actions/build-image@2026.09.0
+        uses: jethome-homeassistant/builder/actions/build-image@2026.06.0
         with:
           arch: ${{ matrix.arch }}
           build-args: |
