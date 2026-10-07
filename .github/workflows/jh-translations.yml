@@ -126,7 +126,8 @@ jobs:
                 sleep 30
               done
             fi
-            upload_args=(-F "overwrite=1")
+            # Without conflicts Weblate skips strings that are already translated
+            upload_args=(-F "conflicts=replace-translated")
             if [ "$code" = "$source_lang" ]; then
               # Monolingual source translation can only be fully replaced
               upload_args=(-F "method=replace")
